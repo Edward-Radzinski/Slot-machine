@@ -7,15 +7,13 @@ public class Spin : MonoBehaviour
     private float _speed = 100f;
     private float _spinTime = 3.5f;
 
-    private bool _isSpining = false;
-    public bool IsSpinning
+    public float SpinTime
     {
-        get { return _isSpining; }
-        private set { _isSpining = value; }
+        get { return _spinTime; }
+        private set { _spinTime = value; }
     }
+    public bool IsSpinning { get;  private set; }
 
-
-    #region MonoBehaviour methods
     private void Update()
     {
         if (IsSpinning)
@@ -23,28 +21,27 @@ public class Spin : MonoBehaviour
             transform.Rotate(-_speed * Time.deltaTime, 0, 0);
         }
     }
-    #endregion
 
     private void RoundRotation()
     {
-        int tmp, number = (int)transform.rotation.eulerAngles.x;
-        if ((tmp = number % 30) != 0) // 360 грудсов делить на 12 граней = 30
+        int tmp, angle = (int)transform.rotation.eulerAngles.x;
+        if ((tmp = angle % 30) != 0) // 360 divided by 12 = 30
         {
-            number += number > -1 ? (30 - tmp) : -tmp;
+            angle += angle > -1 ? (30 - tmp) : -tmp;
         }
-        transform.rotation = Quaternion.Euler(number, 0, 0);
+        transform.rotation = Quaternion.Euler(angle, 0, 0);
     }
 
     public void StartSpin()
     {
-        IsSpinning = true;
         StopAllCoroutines();
         StartCoroutine("StopSpin");
     }
 
     private IEnumerator StopSpin()
     {
-        yield return new WaitForSeconds(_spinTime);
+        IsSpinning = true;
+        yield return new WaitForSeconds(SpinTime);
         RoundRotation();
         IsSpinning = false;
     }
